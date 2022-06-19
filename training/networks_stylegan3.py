@@ -15,6 +15,7 @@ import scipy.optimize
 import torch
 from torch_utils import misc, persistence
 from torch_utils.ops import bias_act, conv2d_gradfix, filtered_lrelu
+from training.transform_layers import ManipulationLayer
 
 # ----------------------------------------------------------------------------
 
@@ -297,6 +298,7 @@ class SynthesisLayer(torch.nn.Module):
         use_radial_filters=False,  # Use radially symmetric downsampling filter? Ignored for critically sampled layers.
         conv_clamp=256,  # Clamp the output to [-X, +X], None = disable clamping.
         magnitude_ema_beta=0.999,  # Decay rate for the moving average of input magnitudes.
+        layer_id=-1,  # layer IDX used to control network bending
     ):
         super().__init__()
         self.w_dim = w_dim
@@ -363,7 +365,10 @@ class SynthesisLayer(torch.nn.Module):
         pad_hi = pad_total - pad_lo
         self.padding = [int(pad_lo[0]), int(pad_hi[0]), int(pad_lo[1]), int(pad_hi[1])]
 
-    def forward(self, x, w, noise_mode="random", force_fp32=False, update_emas=False):
+        # manipulation layer (for network bending)
+        self.manipulate = ManipulationLayer(layer_id=layer_id)
+
+    def forward(self, x, w, noise_mode="random", force_fp32=False, update_emas=False, transform_dict_list=None):
         assert noise_mode in ["random", "const", "none"]  # unused
         misc.assert_shape(x, [None, self.in_channels, int(self.in_size[1]), int(self.in_size[0])])
         misc.assert_shape(w, [x.shape[0], self.w_dim])
@@ -407,6 +412,9 @@ class SynthesisLayer(torch.nn.Module):
             slope=slope,
             clamp=self.conv_clamp,
         )
+
+        # apply network bending manipulation
+        x = self.manipulation(x, transform_dict_list)
 
         # Ensure correct shape and dtype.
         misc.assert_shape(x, [None, self.out_channels, int(self.out_size[1]), int(self.out_size[0])])
@@ -528,6 +536,7 @@ class SynthesisNetwork(torch.nn.Module):
                 in_half_width=half_widths[prev],
                 out_half_width=half_widths[idx],
                 **layer_kwargs,
+                layer_id=idx,
             )
             name = f"L{idx}_{layer.out_size[0]}_{layer.out_channels}"
             setattr(self, name, layer)
