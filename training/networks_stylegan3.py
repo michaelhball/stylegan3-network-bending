@@ -319,6 +319,7 @@ class SynthesisLayer(torch.nn.Module):
         self.conv_kernel = 1 if is_torgb else conv_kernel
         self.conv_clamp = conv_clamp
         self.magnitude_ema_beta = magnitude_ema_beta
+        self.layer_id = layer_id
 
         # Setup parameters and buffers.
         self.affine = FullyConnectedLayer(self.w_dim, self.in_channels, bias_init=1)
@@ -447,6 +448,7 @@ class SynthesisLayer(torch.nn.Module):
     def extra_repr(self):
         return "\n".join(
             [
+                f"layer_id={self.layer_id}",
                 f"w_dim={self.w_dim:d}, is_torgb={self.is_torgb},",
                 f"is_critically_sampled={self.is_critically_sampled}, use_fp16={self.use_fp16},",
                 f"in_sampling_rate={self.in_sampling_rate:g}, out_sampling_rate={self.out_sampling_rate:g},",
