@@ -414,7 +414,7 @@ class SynthesisLayer(torch.nn.Module):
         )
 
         # apply network bending manipulation
-        x = self.manipulation(x, transform_dict_list)
+        x = self.manipulate(x, transform_dict_list)
 
         # Ensure correct shape and dtype.
         misc.assert_shape(x, [None, self.out_channels, int(self.out_size[1]), int(self.out_size[0])])

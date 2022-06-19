@@ -20,13 +20,13 @@ class Rotate(nn.Module):
     def __init__(self):
         super().__init__()
 
-    def forward(self, x, params, indicies):
+    def forward(self, x, params, indices):
         if not isinstance(params[0], float) or params[0] < 0 or params[0] > 360:
             print("Rotation parameter should be a float between 0 and 360 degrees.")
             # raise ValueError
         x_array = list(torch.split(x, 1, 1))
         for i, dim in enumerate(x_array):
-            if i in indicies:
+            if i in indices:
                 d_ = torch.squeeze(dim)
                 tf = torch.ops.my_ops.rotate(d_, params[0])
                 tf = torch.unsqueeze(torch.unsqueeze(tf, 0), 0)
@@ -95,7 +95,7 @@ class ManipulationLayer(nn.Module):
                     transform_dict["params"][1],
                 )
             if transform_dict["layer_id"] == self.layer_id:
-                out = self.layer_options[transform_dict["transformID"]](
-                    out, transform_dict["params"], transform_dict["indicies"]
+                out = self.layer_options[transform_dict["transform_id"]](
+                    out, transform_dict["params"], transform_dict["indices"]
                 )
         return out
