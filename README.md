@@ -1,3 +1,11 @@
+## Stylegan3-Network-Bending
+
+This project is a reimplementation of https://github.com/terrybroad/network-bending on top of the official StyleGAN3 repository ([link](https://github.com/NVlabs/stylegan3)). Full credit goes to the authors of those two libraries.
+
+Please refer to the documentation in [network-bending](https://github.com/terrybroad/network-bending#configuring-the-transforms) for more information about usage, the only difference being that the requirements are in line with StyleGAN3. Utils, example code, and a Colab notebook will be added soon.
+
+---
+
 ## Alias-Free Generative Adversarial Networks (StyleGAN3)<br><sub>Official PyTorch implementation of the NeurIPS 2021 paper</sub>
 
 ![Teaser image](./docs/stylegan3-teaser-1920x1006.png)
