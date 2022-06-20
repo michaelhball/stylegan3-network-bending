@@ -6,12 +6,12 @@ from torch import nn
 from torch.autograd import Variable
 from torchvision import utils
 
-torch.ops.load_library("transforms/erode/build/liberode.so")
-torch.ops.load_library("transforms/dilate/build/libdilate.so")
-torch.ops.load_library("transforms/scale/build/libscale.so")
-torch.ops.load_library("transforms/rotate/build/librotate.so")
-torch.ops.load_library("transforms/resize/build/libresize.so")
-torch.ops.load_library("transforms/translate/build/libtranslate.so")
+torch.ops.load_library("training/transforms/erode/build/liberode.so")
+torch.ops.load_library("training/transforms/dilate/build/libdilate.so")
+torch.ops.load_library("training/transforms/scale/build/libscale.so")
+torch.ops.load_library("training/transforms/rotate/build/librotate.so")
+torch.ops.load_library("training/transforms/resize/build/libresize.so")
+torch.ops.load_library("training/transforms/translate/build/libtranslate.so")
 
 
 # TODO: add type annotations to this file
