@@ -1,5 +1,5 @@
 import os
-from typing import List, Optional
+from typing import Iterable, List, Optional
 
 import torch
 from torch import nn
@@ -160,15 +160,18 @@ class Rotate(nn.Module):
     def __init__(self):
         super().__init__()
 
-    def forward(self, x, params, indices):
-        if not isinstance(params[0], float) or params[0] < 0 or params[0] > 360:
-            print("Rotation parameter should be a float between 0 and 360 degrees.")
-            # raise ValueError
+    def forward(self, x, params, indices: Iterable[int]):
+        try:
+            angle = float(params[0])
+        except:
+            raise ValueError("Rotation parameter should be a float")
+        assert 0 <= angle <= 360, "Rotation parameter should be between 0 and 360 degrees"
+
         x_array = list(torch.split(x, 1, 1))
         for i, dim in enumerate(x_array):
             if i in indices:
                 d_ = torch.squeeze(dim)
-                tf = torch.ops.my_ops.rotate(d_, params[0])
+                tf = torch.ops.my_ops.rotate(d_, angle)
                 tf = torch.unsqueeze(torch.unsqueeze(tf, 0), 0)
                 x_array[i] = tf
         return torch.cat(x_array, 1)
